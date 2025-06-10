@@ -12,7 +12,7 @@ app.use(express.static(__dirname)); // Serve index.html
 
 mongoose
   .connect(
-    "mongodb+srv://argovesta:Tirtayasa2024@argovesta.jqazjpd.mongodb.net/tracker?retryWrites=true&w=majority&appName=argovesta",
+    "mongodb+srv://argovesta:Tirtayasa2024@argovesta.jqazjpd.mongodb.net/argovesta?retryWrites=true&w=majority&appName=argovesta",
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,

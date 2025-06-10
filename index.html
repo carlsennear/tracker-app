@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Tracking Lokasi & Foto</title>
+  </head>
+  <body>
+    <h1>Tracking Lokasi & Foto</h1>
+    <button onclick="startTracking()">Mulai Tracking</button>
+    <p id="status"></p>
+
+    <script>
+      function startTracking() {
+        document.getElementById("status").innerText =
+          "Mengambil lokasi dan foto...";
+
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const latitude = pos.coords.latitude;
+            const longitude = pos.coords.longitude;
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+              video: true,
+            });
+            const video = document.createElement("video");
+            video.srcObject = stream;
+            await video.play();
+
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0);
+
+            const photo = canvas.toDataURL("image/jpeg");
+
+            fetch("/upload", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ latitude, longitude, photo }),
+            })
+              .then((res) => {
+                document.getElementById("status").innerText =
+                  "✅ Data berhasil dikirim!";
+                stream.getTracks().forEach((track) => track.stop());
+              })
+              .catch((err) => {
+                document.getElementById("status").innerText =
+                  "❌ Gagal kirim data";
+                console.error(err);
+              });
+          },
+          (err) => {
+            document.getElementById("status").innerText =
+              "❌ Gagal ambil lokasi";
+            console.error(err);
+          },
+        );
+      }
+    </script>
+  </body>
+</html>

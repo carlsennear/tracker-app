@@ -9,7 +9,7 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' })); // Tambah limit buat handle data gambar base64
 app.use(express.static(__dirname)); // Serve index.html dari root folder
 
 // Koneksi MongoDB Atlas
@@ -24,14 +24,14 @@ mongoose
   .then(() => console.log("✅ MongoDB terkoneksi!"))
   .catch((err) => console.error("❌ Gagal konek MongoDB:", err));
 
-// Endpoint POST untuk simpan data
+// Endpoint POST untuk simpan data tracking
 app.post("/upload", async (req, res) => {
   try {
-    console.log("📥 Request body:", req.body); // Log data masuk
+    console.log("📥 Request body:", req.body);
 
     const { latitude, longitude, photo } = req.body;
 
-    // Validasi data
+    // Validasi input
     if (!latitude || !longitude || !photo) {
       console.warn("⚠️ Data tidak lengkap:", { latitude, longitude, photo });
       return res.status(400).send("❌ Data tidak lengkap");
@@ -48,7 +48,7 @@ app.post("/upload", async (req, res) => {
   }
 });
 
-// Serve file HTML
+// Serve file HTML (index.html)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });

@@ -12,12 +12,12 @@ app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(express.static(__dirname));
 
-// Koneksi MongoDB pakai ENV
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
+// Koneksi MongoDB
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("✅ MongoDB terkoneksi!"))
   .catch((err) => console.error("❌ Gagal konek MongoDB:", err));
 

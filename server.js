@@ -9,29 +9,25 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json({ limit: '10mb' })); // Tambah limit buat handle data gambar base64
-app.use(express.static(__dirname)); // Serve index.html dari root folder
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(express.static(__dirname));
 
-// Koneksi MongoDB Atlas
+// Koneksi MongoDB pakai ENV
 mongoose
-  .connect(
-    "mongodb+srv://argovesta:Tirtayasa2024@argovesta.jqazjpd.mongodb.net/argovesta?retryWrites=true&w=majority&appName=argovesta",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("✅ MongoDB terkoneksi!"))
   .catch((err) => console.error("❌ Gagal konek MongoDB:", err));
 
-// Endpoint POST untuk simpan data tracking
+// Endpoint simpan data
 app.post("/upload", async (req, res) => {
   try {
     console.log("📥 Request body:", req.body);
 
     const { latitude, longitude, photo } = req.body;
 
-    // Validasi input
     if (!latitude || !longitude || !photo) {
       console.warn("⚠️ Data tidak lengkap:", { latitude, longitude, photo });
       return res.status(400).send("❌ Data tidak lengkap");
@@ -48,7 +44,7 @@ app.post("/upload", async (req, res) => {
   }
 });
 
-// Serve file HTML (index.html)
+// Serve index.html
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });

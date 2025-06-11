@@ -1,3 +1,5 @@
+require("dotenv").config(); // HARUS paling atas!
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -12,31 +14,27 @@ app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(express.static(__dirname));
 
-// Koneksi MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("✅ MongoDB terkoneksi!"))
-  .catch((err) => console.error("❌ Gagal konek MongoDB:", err));
+// Koneksi ke MongoDB Atlas
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("✅ MongoDB terkoneksi!"))
+.catch((err) => console.error("❌ Gagal konek MongoDB:", err));
 
-// Endpoint simpan data
+// Endpoint POST
 app.post("/upload", async (req, res) => {
   try {
-    console.log("📥 Request body:", req.body);
-
     const { latitude, longitude, photo } = req.body;
 
     if (!latitude || !longitude || !photo) {
-      console.warn("⚠️ Data tidak lengkap:", { latitude, longitude, photo });
       return res.status(400).send("❌ Data tidak lengkap");
     }
 
     const log = new Log({ latitude, longitude, photo });
     await log.save();
 
-    console.log("✅ Data berhasil disimpan ke MongoDB!");
+    console.log("✅ Data berhasil disimpan ke MongoDB");
     res.send("✅ Data disimpan!");
   } catch (err) {
     console.error("❌ Gagal simpan ke MongoDB:", err);
